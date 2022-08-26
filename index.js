@@ -2,6 +2,9 @@ const textBox = document.querySelector('#userTextBox');
 const startButton = document.querySelector('#start');
 const testText = document.querySelector('#testText');
 const result = document.querySelector('#speed');
+const startLight1 = document.querySelector('#startLight1');
+const startLight2 = document.querySelector('#startLight2');
+const startLight3 = document.querySelector('#startLight3');
 
 const textArray = [
     "That was what I wanted, but I don't need it to be gone. I can love you and I can love life and bear the pain all at the same time. I think the pain might even make the rest better, the way a good setting can make a diamond look better.",
@@ -34,24 +37,49 @@ function checkIfComplete(string) {
 function findFirstDiffPos(a, b) {
     if (a.length < b.length) [a, b] = [b, a];
     return [...a].findIndex((chr, i) => chr !== b[i]);
-  }  
+}  
+
+function clearLights() {
+    startLight1.style.backgroundColor='white';
+    startLight2.style.backgroundColor='white';
+    startLight3.style.backgroundColor='white';
+}
+
+function resetPage() {
+    textBox.value = '';
+    testText.textContent = 'Click Start to start the test';
+    result.textContent = 'Words Per Min:';
+    textBox.disabled=true;
+}
 
 startButton.addEventListener('click', () => {
-    startTime = performance.now();
+    clearLights();
     testTextGiven = textArray[Math.floor(Math.random()*textArray.length)];
     testText.textContent = testTextGiven;
-    textBox.value = '';
-    textBox.focus();
-    result.textContent = 'Words Per Min:';
+
+    // ! Any better way to do this?
+    setTimeout(()=> {
+        startLight1.style.backgroundColor='green';
+        setTimeout(()=> {
+            startLight2.style.backgroundColor='green';
+            setTimeout(()=> {
+                startLight3.style.backgroundColor='green';
+                startTime = performance.now();
+                textBox.value = '';
+                textBox.disabled=false;
+                textBox.focus();
+                result.textContent = 'Words Per Min:';
+            }, 1000);
+        }, 1000);
+    }, 1000);
 });
 
 textBox.addEventListener('input', (event) => {
     const isComplete = checkIfComplete(event.target.value);
     if(isComplete) {
+        clearLights();
         alert(`Congratulations, your WPM is ${calculateWPM(event.target.value).toFixed(0)}`);
-        textBox.value = '';
-        testText.textContent = 'Click Start to start the test';
-        result.textContent = 'Words Per Min:';
+        resetPage();
         return;
     }
 
@@ -67,3 +95,9 @@ textBox.addEventListener('input', (event) => {
                             testTextGiven.substring(diffPosEnd+1);
     }
 });
+
+textBox.addEventListener('paste', (event) => {
+    alert("Nah! That won't work.");
+    clearLights();
+    resetPage();
+})

@@ -27,3 +27,13 @@ mark {
     width:100%; 
     opacity: 1;
 }
+
+#startSignal > div {
+    height: 40px;
+    width: 40px;
+    border: 1px solid black;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    display: inline-block;
+}
