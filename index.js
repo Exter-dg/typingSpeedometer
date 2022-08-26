@@ -95,3 +95,9 @@ textBox.addEventListener('input', (event) => {
                             testTextGiven.substring(diffPosEnd+1);
     }
 });
+
+textBox.addEventListener('paste', (event) => {
+    alert("Nah! That won't work.");
+    clearLights();
+    resetPage();
+})
