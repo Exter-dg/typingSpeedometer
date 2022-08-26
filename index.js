@@ -2,6 +2,9 @@ const textBox = document.querySelector('#userTextBox');
 const startButton = document.querySelector('#start');
 const testText = document.querySelector('#testText');
 const result = document.querySelector('#speed');
+const startLight1 = document.querySelector('#startLight1');
+const startLight2 = document.querySelector('#startLight2');
+const startLight3 = document.querySelector('#startLight3');
 
 const textArray = [
     "That was what I wanted, but I don't need it to be gone. I can love you and I can love life and bear the pain all at the same time. I think the pain might even make the rest better, the way a good setting can make a diamond look better.",
@@ -37,12 +40,27 @@ function findFirstDiffPos(a, b) {
   }  
 
 startButton.addEventListener('click', () => {
-    startTime = performance.now();
+    startLight1.style.backgroundColor='white';
+    startLight2.style.backgroundColor='white';
+    startLight3.style.backgroundColor='white';
+
     testTextGiven = textArray[Math.floor(Math.random()*textArray.length)];
     testText.textContent = testTextGiven;
-    textBox.value = '';
-    textBox.focus();
-    result.textContent = 'Words Per Min:';
+
+    // ! Any better way to do this?
+    setTimeout(()=> {
+        startLight1.style.backgroundColor='green';
+        setTimeout(()=> {
+            startLight2.style.backgroundColor='green';
+            setTimeout(()=> {
+                startLight3.style.backgroundColor='green';
+                startTime = performance.now();
+                textBox.value = '';
+                textBox.focus();
+                result.textContent = 'Words Per Min:';
+            }, 1000);
+        }, 1000);
+    }, 1000);
 });
 
 textBox.addEventListener('input', (event) => {
