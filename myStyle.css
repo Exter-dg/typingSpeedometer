@@ -19,3 +19,11 @@ mark {
     margin-right: 50px;
     margin-left: 50px;
 }
+
+#footer { 
+    height: 20px; 
+    position: fixed; 
+    bottom:0%;
+    width:100%; 
+    opacity: 1;
+}
