@@ -37,13 +37,23 @@ function checkIfComplete(string) {
 function findFirstDiffPos(a, b) {
     if (a.length < b.length) [a, b] = [b, a];
     return [...a].findIndex((chr, i) => chr !== b[i]);
-  }  
+}  
 
-startButton.addEventListener('click', () => {
+function clearLights() {
     startLight1.style.backgroundColor='white';
     startLight2.style.backgroundColor='white';
     startLight3.style.backgroundColor='white';
+}
 
+function resetPage() {
+    textBox.value = '';
+    testText.textContent = 'Click Start to start the test';
+    result.textContent = 'Words Per Min:';
+    textBox.disabled=true;
+}
+
+startButton.addEventListener('click', () => {
+    clearLights();
     testTextGiven = textArray[Math.floor(Math.random()*textArray.length)];
     testText.textContent = testTextGiven;
 
@@ -56,6 +66,7 @@ startButton.addEventListener('click', () => {
                 startLight3.style.backgroundColor='green';
                 startTime = performance.now();
                 textBox.value = '';
+                textBox.disabled=false;
                 textBox.focus();
                 result.textContent = 'Words Per Min:';
             }, 1000);
@@ -66,10 +77,9 @@ startButton.addEventListener('click', () => {
 textBox.addEventListener('input', (event) => {
     const isComplete = checkIfComplete(event.target.value);
     if(isComplete) {
+        clearLights();
         alert(`Congratulations, your WPM is ${calculateWPM(event.target.value).toFixed(0)}`);
-        textBox.value = '';
-        testText.textContent = 'Click Start to start the test';
-        result.textContent = 'Words Per Min:';
+        resetPage();
         return;
     }
 
