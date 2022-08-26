@@ -31,6 +31,11 @@ function checkIfComplete(string) {
     return string === testTextGiven;
 }
 
+function findFirstDiffPos(a, b) {
+    if (a.length < b.length) [a, b] = [b, a];
+    return [...a].findIndex((chr, i) => chr !== b[i]);
+  }  
+
 startButton.addEventListener('click', () => {
     startTime = performance.now();
     testTextGiven = textArray[Math.floor(Math.random()*textArray.length)];
@@ -51,7 +56,14 @@ textBox.addEventListener('input', (event) => {
     }
 
     const isTextCorrect = checkText(event.target.value);
-    if(isTextCorrect)
+    if(isTextCorrect) {
         result.textContent = `Words Per Min: ${calculateWPM(event.target.value).toFixed(0)}`;
-    console.log(isTextCorrect);
+        testText.textContent = testTextGiven;
+    } else {
+        const diffPosStart = findFirstDiffPos(testTextGiven, event.target.value);
+        const diffPosEnd = event.target.value.length-1;
+        testText.innerHTML = testTextGiven.substring(0, diffPosStart) + 
+                            '<mark>'+ testTextGiven.substring(diffPosStart, diffPosEnd+1) + '</mark>' + 
+                            testTextGiven.substring(diffPosEnd+1);
+    }
 });
