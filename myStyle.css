@@ -6,7 +6,12 @@ h1 {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
-#text {
+#userTextBox {
     width: 500px;
     height: 50px;
+}
+
+#testText {
+    margin-right: 50px;
+    margin-left: 50px;
 }
