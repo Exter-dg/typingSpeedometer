@@ -59,10 +59,12 @@ startButton.addEventListener('click', () => {
 
     // ! Any better way to do this?
     setTimeout(()=> {
-        startLight1.style.backgroundColor='green';
+        startLight1.style.backgroundColor='red';
         setTimeout(()=> {
-            startLight2.style.backgroundColor='green';
+            startLight2.style.backgroundColor='yellow';
             setTimeout(()=> {
+                startLight1.style.backgroundColor='green';
+                startLight2.style.backgroundColor='green';
                 startLight3.style.backgroundColor='green';
                 startTime = performance.now();
                 textBox.value = '';
