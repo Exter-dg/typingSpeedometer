@@ -27,6 +27,10 @@ function checkText(string) {
     return testTextGiven.startsWith(string);
 }
 
+function checkIfComplete(string) {
+    return string === testTextGiven;
+}
+
 startButton.addEventListener('click', () => {
     startTime = performance.now();
     testTextGiven = textArray[Math.floor(Math.random()*textArray.length)];
@@ -37,9 +41,17 @@ startButton.addEventListener('click', () => {
 });
 
 textBox.addEventListener('input', (event) => {
+    const isComplete = checkIfComplete(event.target.value);
+    if(isComplete) {
+        alert(`Congratulations, your WPM is ${calculateWPM(event.target.value).toFixed(0)}`);
+        textBox.value = '';
+        testText.textContent = 'Click Start to start the test';
+        result.textContent = 'Words Per Min:';
+        return;
+    }
 
-  const isTextCorrect = checkText(event.target.value);
-  if(isTextCorrect)
-    result.textContent = `Words Per Min: ${calculateWPM(event.target.value).toFixed(0)}`;
-  console.log(isTextCorrect);
+    const isTextCorrect = checkText(event.target.value);
+    if(isTextCorrect)
+        result.textContent = `Words Per Min: ${calculateWPM(event.target.value).toFixed(0)}`;
+    console.log(isTextCorrect);
 });
