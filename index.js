@@ -1,3 +1,28 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-analytics.js";
+import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js";
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyD0n1p5snTqoruznZRTYeJe3hMSAZWTbLQ",
+  authDomain: "typing-speedometer.firebaseapp.com",
+  projectId: "typing-speedometer",
+  storageBucket: "typing-speedometer.appspot.com",
+  messagingSenderId: "901758642440",
+  appId: "1:901758642440:web:a22b51a89e06735da024bd",
+  measurementId: "G-3FTWHTL7GV"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const analytics = getAnalytics(app);
+
 const textBox = document.querySelector('#userTextBox');
 const startButton = document.querySelector('#start');
 const testText = document.querySelector('#testText');
@@ -12,6 +37,8 @@ const textArray = [
     "You never should settle for the lifetime that is handed to you. There's always a line to be cut and someone to barrel through. And if you should find that you're about to get the short of the stick, take what you want, return what you get.",
     "There will come a time when all of us are dead."
 ];
+
+let users = {}
 
 var startTime = 0;
 var testTextGiven = '';
@@ -52,6 +79,71 @@ function resetPage() {
     textBox.disabled=true;
 }
 
+async function getData() {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if(users[data['name']] !== undefined) {
+            users[data['name']] = Math.max(users[data['name']], data['score']);
+        }
+        else
+            users[data['name']] = data['score'];
+        // console.log(data['score']);
+        // console.log(`${doc.id} => ${doc.data()}`);
+    });
+    console.log(users);
+}
+
+async function addData(userName, score) {
+    try {
+        const docRef = await addDoc(collection(db, "users"), {
+            name: userName,
+            score: parseInt(score),
+        });
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+}
+
+function sortUsers() {
+    users = Object.fromEntries(
+        Object.entries(users).sort(([,a],[,b]) => b-a)
+    );
+}
+
+function displayUsers() {
+    var table = document.createElement("TABLE");
+    table.setAttribute("id", "userScoreTable"); 
+    document.body.appendChild(table);
+    
+    var thead = document.createElement('thead');
+    table.appendChild(thead);
+    thead.appendChild(document.createElement("th")).
+            appendChild(document.createTextNode('User'));
+    thead.appendChild(document.createElement("th")).
+            appendChild(document.createTextNode('Score'));
+    let i =0;
+    for(const user in users) {
+        if(i==5)
+            break;
+        var row = document.createElement("TR");
+        var userNameCell = document.createElement("TD");
+        var userScoreCell = document.createElement("TD");
+
+        row.appendChild(userNameCell);
+        row.appendChild(userScoreCell);
+
+        var userName = document.createTextNode(user);
+        var userScore = document.createTextNode(users[user]);
+
+        userNameCell.appendChild(userName);
+        userScoreCell.appendChild(userScore);
+        table.appendChild(row);
+        i+=1;
+    }
+}
+
 startButton.addEventListener('click', () => {
     clearLights();
     testTextGiven = textArray[Math.floor(Math.random()*textArray.length)];
@@ -76,12 +168,15 @@ startButton.addEventListener('click', () => {
     }, 1000);
 });
 
-textBox.addEventListener('input', (event) => {
+textBox.addEventListener('input', async (event) => {
     const isComplete = checkIfComplete(event.target.value);
     if(isComplete) {
         clearLights();
-        alert(`Congratulations, your WPM is ${calculateWPM(event.target.value).toFixed(0)}`);
-        resetPage();
+        const wpm = calculateWPM(event.target.value).toFixed(0);
+        alert(`Congratulations, your WPM is ${wpm}`);
+        var name = window.prompt("Let's add you to the leaderboards, Enter your name: ");   
+        await addData(name, wpm);
+        location.reload(); 
         return;
     }
 
@@ -103,3 +198,7 @@ textBox.addEventListener('paste', (event) => {
     clearLights();
     resetPage();
 })
+
+await getData();
+sortUsers();
+displayUsers();
