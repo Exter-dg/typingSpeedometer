@@ -37,3 +37,28 @@ mark {
     border-radius: 50px;
     display: inline-block;
 }
+
+#userScoreTable {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  #userScoreTable td, #userScoreTable th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #userScoreTable tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #userScoreTable tr:hover {background-color: #ddd;}
+  
+  #userScoreTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+  }
