@@ -2,9 +2,8 @@ const textBox = document.querySelector('#userTextBox');
 const startButton = document.querySelector('#start');
 const testText = document.querySelector('#testText');
 const result = document.querySelector('#speed');
-const startLight1 = document.querySelector('#startLight1');
-const startLight2 = document.querySelector('#startLight2');
-const startLight3 = document.querySelector('#startLight3');
+const modal = document.querySelector('#modal')
+const btnReset = document.querySelector('#reset')
 
 const textArray = [
     "That was what I wanted, but I don't need it to be gone. I can love you and I can love life and bear the pain all at the same time. I think the pain might even make the rest better, the way a good setting can make a diamond look better.",
@@ -23,7 +22,7 @@ function calculateWords(string) {
 function calculateWPM(string) {
     const noOfWords = calculateWords(string);
     const noOfSec = (performance.now() - startTime) / (1000);
-    return noOfWords/noOfSec * 60;
+    return noOfWords / noOfSec * 60;
 }
 
 function checkText(string) {
@@ -37,69 +36,62 @@ function checkIfComplete(string) {
 function findFirstDiffPos(a, b) {
     if (a.length < b.length) [a, b] = [b, a];
     return [...a].findIndex((chr, i) => chr !== b[i]);
-}  
-
-function clearLights() {
-    startLight1.style.backgroundColor='white';
-    startLight2.style.backgroundColor='white';
-    startLight3.style.backgroundColor='white';
 }
 
 function resetPage() {
     textBox.value = '';
-    testText.textContent = 'Click Start to start the test';
-    result.textContent = 'Words Per Min:';
-    textBox.disabled=true;
+    testText.textContent = 'Click Start to start the test.';
+    result.textContent = 'Words per minute(WPM):';
+    textBox.disabled = true;
+}
+
+function toggleModal() {
+    modal.classList.toggle('visible')
+    modal.classList.toggle('hidden')
+}
+
+function openModal(message) {
+    modal.textContent = message;
+    toggleModal()
+    setTimeout(toggleModal, 5000)
 }
 
 startButton.addEventListener('click', () => {
-    clearLights();
-    testTextGiven = textArray[Math.floor(Math.random()*textArray.length)];
+    testTextGiven = textArray[Math.floor(Math.random() * textArray.length)];
     testText.textContent = testTextGiven;
 
-    // ! Any better way to do this?
-    setTimeout(()=> {
-        startLight1.style.backgroundColor='red';
-        setTimeout(()=> {
-            startLight2.style.backgroundColor='yellow';
-            setTimeout(()=> {
-                startLight1.style.backgroundColor='green';
-                startLight2.style.backgroundColor='green';
-                startLight3.style.backgroundColor='green';
-                startTime = performance.now();
-                textBox.value = '';
-                textBox.disabled=false;
-                textBox.focus();
-                result.textContent = 'Words Per Min:';
-            }, 1000);
-        }, 1000);
-    }, 1000);
+    startTime = performance.now();
+    textBox.value = '';
+    textBox.disabled = false;
+    textBox.focus();
+    result.textContent = 'Words per minute(WPM):';
 });
 
 textBox.addEventListener('input', (event) => {
     const isComplete = checkIfComplete(event.target.value);
-    if(isComplete) {
-        clearLights();
-        alert(`Congratulations, your WPM is ${calculateWPM(event.target.value).toFixed(0)}`);
+    if (isComplete) {
+        openModal(`Congratulations, your WPM is ${calculateWPM(event.target.value).toFixed(0)}`)
         resetPage();
         return;
     }
 
     const isTextCorrect = checkText(event.target.value);
-    if(isTextCorrect) {
-        result.textContent = `Words Per Min: ${calculateWPM(event.target.value).toFixed(0)}`;
+    if (isTextCorrect) {
+        result.textContent = `Words per minute(WPM): ${calculateWPM(event.target.value).toFixed(0)}`;
         testText.textContent = testTextGiven;
     } else {
         const diffPosStart = findFirstDiffPos(testTextGiven, event.target.value);
-        const diffPosEnd = event.target.value.length-1;
-        testText.innerHTML = testTextGiven.substring(0, diffPosStart) + 
-                            '<mark>'+ testTextGiven.substring(diffPosStart, diffPosEnd+1) + '</mark>' + 
-                            testTextGiven.substring(diffPosEnd+1);
+        const diffPosEnd = event.target.value.length - 1;
+        testText.innerHTML = testTextGiven.substring(0, diffPosStart) +
+            '<mark>' + testTextGiven.substring(diffPosStart, diffPosEnd + 1) + '</mark>' +
+            testTextGiven.substring(diffPosEnd + 1);
     }
 });
 
 textBox.addEventListener('paste', (event) => {
-    alert("Nah! That won't work.");
-    clearLights();
+    openModal('Nah! That won\'t work.')
     resetPage();
 })
+
+
+btnReset.addEventListener('click', resetPage)
